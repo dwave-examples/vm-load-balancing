@@ -74,7 +74,7 @@ def magnify_graph(
 
     Returns:
         list[str]: A list of the new graph class names.
-        list[str]: A list of the new magifying button class names.
+        list[str]: A list of the new magnifying button class names.
     """
     triggered_index = ctx.triggered_id["index"]
     one_page_count = int(len(graph_classes) / 2)
@@ -177,7 +177,7 @@ class RunOptimizationReturn(NamedTuple):
     fig_mem_result: go.Figure
     fig_cpu_percent_result: go.Figure
     fig_cpu_result: go.Figure
-    results_tabl_disabled: bool
+    results_tab_disabled: bool
 
 
 @dash.callback(
@@ -233,7 +233,7 @@ def run_optimization(
             fig_mem_result: The figure for the memory virtual machine graph.
             fig_cpu_percent_result: The figure for the CPU percent graph.
             fig_cpu_result: The figure for the CPU virtual machine graph.
-            results_tabl_disabled: Whether the results tab should be disabled.
+            results_tab_disabled: Whether the results tab should be disabled.
     """
     priority = PriorityType(priority)
     cqm = cqm_balancer.build_cqm(vms, hosts, priority)
@@ -258,5 +258,5 @@ def run_optimization(
         fig_mem_result=fig_mem,
         fig_cpu_percent_result=fig_cpu_percent,
         fig_cpu_result=fig_cpu,
-        results_tabl_disabled=False,
+        results_tab_disabled=False,
     )
