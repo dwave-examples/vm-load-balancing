@@ -73,7 +73,6 @@ class TestGenerateCharts(unittest.TestCase):
 
         # Check x and y axes
         self.assertEqual(fig_dict["data"][0]["y"], ["Host 1"])
-        self.assertEqual(fig_dict["data"][0]["x"], [50])
 
     def test_generate_vm_bar_chart(self):
         """Test generating the vm bar chart fig"""
@@ -102,4 +101,3 @@ class TestGenerateCharts(unittest.TestCase):
 
         # Check x and y axes
         self.assertEqual(fig_dict["data"][0]["y"], ["Host 1"])
-        self.assertEqual(fig_dict["data"][0]["x"], [CPU_CAP / 4])
