@@ -28,13 +28,14 @@ from src.demo_enums import PriorityType
 
 @dash.callback(
     Output({"type": "to-collapse-class", "index": MATCH}, "className"),
+    Output({"type": "collapse-trigger", "index": MATCH}, "aria-expanded"),
     inputs=[
         Input({"type": "collapse-trigger", "index": MATCH}, "n_clicks"),
         State({"type": "to-collapse-class", "index": MATCH}, "className"),
     ],
     prevent_initial_call=True,
 )
-def toggle_left_column(collapse_trigger: int, to_collapse_class: str) -> str:
+def toggle_left_column(collapse_trigger: int, to_collapse_class: str) -> tuple[str, str]:
     """Toggles a 'collapsed' class that hides and shows some aspect of the UI.
 
     Args:
@@ -44,21 +45,22 @@ def toggle_left_column(collapse_trigger: int, to_collapse_class: str) -> str:
 
     Returns:
         str: The new class name of the thing to collapse.
+        str: The aria-expanded value.
     """
 
     classes = to_collapse_class.split(" ") if to_collapse_class else []
     if "collapsed" in classes:
         classes.remove("collapsed")
-        return " ".join(classes)
-    return to_collapse_class + " collapsed" if to_collapse_class else "collapsed"
+        return " ".join(classes), "true"
+    return to_collapse_class + " collapsed" if to_collapse_class else "collapsed", "false"
 
 
 @dash.callback(
-    Output({"type": "graph", "index": ALL}, "className"),
+    Output({"type": "graph-wrapper", "index": ALL}, "className"),
     Output({"type": "magnifying", "index": ALL}, "className"),
     inputs=[
         Input({"type": "magnifying", "index": ALL}, "n_clicks"),
-        State({"type": "graph", "index": ALL}, "className"),
+        State({"type": "graph-wrapper", "index": ALL}, "className"),
     ],
     prevent_initial_call=True,
 )
@@ -81,9 +83,9 @@ def magnify_graph(
 
     no_update_page = [dash.no_update] * one_page_count
     display_none_page = ["display-none"] * one_page_count
-    reset_graph_page = ["graph-element"] * one_page_count
+    reset_graph_page = ["graph-wrapper"] * one_page_count
     reset_mag_page = ["magnifying"] * one_page_count
-    is_expanded = "graph-element-expanded" in graph_classes[triggered_index]
+    is_expanded = "graph-wrapper-expanded" in graph_classes[triggered_index]
     on_first_page = triggered_index < one_page_count
 
     if on_first_page:  # On first page
@@ -99,7 +101,7 @@ def magnify_graph(
         graph_class_names = no_update_page + display_none_page
         mag_class_names = no_update_page + display_none_page
 
-    graph_class_names[triggered_index] = "graph-element-expanded"
+    graph_class_names[triggered_index] = "graph-wrapper-expanded"
     mag_class_names[triggered_index] = "magnifying minus"
 
     return graph_class_names, mag_class_names
@@ -195,10 +197,10 @@ class RunOptimizationReturn(NamedTuple):
         State("hosts-store", "data"),
     ],
     running=[
-        (Output("cancel-button", "className"), "", "display-none"),  # Show/hide cancel button.
-        (Output("run-button", "className"), "display-none", ""),  # Hides run button while running.
+        (Output("cancel-button", "style"), {}, {"display": "none"}),  # Show/hide cancel button.
+        (Output("run-button", "style"), {"display": "none"}, {}),  # Hides run button while running.
         (Output("results-tab", "disabled"), True, True),  # Disables results tab while running.
-        (Output("results-tab", "label"), "Loading...", "Updated State"),
+        (Output("results-tab", "children"), "Loading...", "Updated State"),
         (Output("tabs", "value"), "input-tab", "input-tab"),  # Switch to input tab while running.
     ],
     cancel=[Input("cancel-button", "n_clicks")],
