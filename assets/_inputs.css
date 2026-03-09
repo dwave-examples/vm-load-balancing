@@ -72,3 +72,13 @@ limitations under the License.
 .mantine-Select-input:focus-visible {
     box-shadow: 0 0 0 2px var(--teal);
 }
+
+.mantine-InputWrapper-label.mantine-RadioGroup-label {
+    font-family: var(--font);
+    color: var(--blue-darkest);
+    font-size: 1.125rem;
+    line-height: 1.5rem;
+    margin: 1rem 0 0.5rem;
+    font-weight: 600;
+    display: block;
+}

@@ -48,6 +48,8 @@ custom CSS can be added below.
     right: 1.4rem;
     z-index: 1;
     cursor: pointer;
+    padding: 0;
+    background: none;
 }
 
 .magnifying span:last-child {

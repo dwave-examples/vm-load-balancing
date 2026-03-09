@@ -14,7 +14,7 @@
 
 """This file stores the Dash HTML layout for the app."""
 from __future__ import annotations
-from enum import EnumType
+from enum import EnumMeta
 
 from dash import dcc, html
 import dash_mantine_components as dmc
@@ -120,21 +120,23 @@ def radio(label: str, id: str, options: list, value: int, inline: bool = True) -
     return html.Div(
         className="radio-wrapper",
         children=[
-            html.Label(label, htmlFor=id),
-            dcc.RadioItems(
-                id=id,
+            dmc.RadioGroup(
                 className=f"radio{' radio--inline' if inline else ''}",
-                inline=inline,
-                options=options,
+                children=dmc.Group(
+                    [dmc.Radio(option["label"], value=option["value"]) for option in options]
+                ),
+                id=id,
                 value=value,
+                label=label,
+                size="sm",
             ),
         ],
     )
 
 
-def generate_options(options: list | EnumType, str_val: bool = False) -> list[dict]:
+def generate_options(options: list | EnumMeta, str_val: bool = False) -> list[dict]:
     """Generates options for dropdowns, checklists, radios, etc."""
-    if isinstance(options, EnumType):
+    if isinstance(options, EnumMeta):
         return [
             {"label": option.label, "value": f"{option.value}" if str_val else option.value}
             for option in options
@@ -152,7 +154,7 @@ def generate_settings_form() -> html.Div:
     Returns:
         html.Div: A Div containing the settings for selecting the scenario.
     """
-    priority_options = generate_options(PriorityType)
+    priority_options = generate_options(PriorityType, str_val=True)
 
     return html.Div(
         className="settings",
@@ -171,7 +173,7 @@ def generate_settings_form() -> html.Div:
                 "Balance Priority",
                 "priority",
                 sorted(priority_options, key=lambda op: op["value"]),
-                0,
+                "0",
             ),
             html.Label("Solver Time Limit (seconds)", htmlFor="solver-time-limit"),
             dmc.NumberInput(
@@ -210,12 +212,13 @@ def generate_graph(index: int) -> html.Div:
     """
     return html.Div(
         children=[
-            html.Div(
+            html.Button(
                 [
                     html.Div([html.Span("+"), html.Span("-")], className="magnifying-lens"),
                 ],
                 className="magnifying",
                 id={"type": "magnifying", "index": index},
+                **{"aria-expanded": "false"},
             ),
             html.Div(
                 dcc.Graph(
