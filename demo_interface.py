@@ -82,32 +82,7 @@ def dropdown(label: str, id: str, options: list) -> html.Div:
     )
 
 
-def checklist(label: str, id: str, options: list, values: list, inline: bool = True) -> html.Div:
-    """Checklist element for option selection.
-
-    Args:
-        label: The title that goes above the checklist.
-        id: A unique selector for this element.
-        options: A list of dictionaries of labels and values.
-        values: A list of values that should be preselected in the checklist.
-        inline: Whether the options of the checklist are displayed beside or below each other.
-    """
-    return html.Div(
-        className="checklist-wrapper",
-        children=[
-            html.Label(label, htmlFor=id),
-            dcc.Checklist(
-                id=id,
-                className=f"checklist{' checklist--inline' if inline else ''}",
-                inline=inline,
-                options=options,
-                value=values,
-            ),
-        ],
-    )
-
-
-def radio(label: str, id: str, options: list, value: int, inline: bool = True) -> html.Div:
+def radio(label: str, id: str, options: list, value: str, inline: bool = True) -> html.Div:
     """Radio element for option selection.
 
     Args:
@@ -121,31 +96,29 @@ def radio(label: str, id: str, options: list, value: int, inline: bool = True) -
         className="radio-wrapper",
         children=[
             dmc.RadioGroup(
-                className=f"radio{' radio--inline' if inline else ''}",
-                children=dmc.Group(
-                    [dmc.Radio(option["label"], value=option["value"]) for option in options]
-                ),
                 id=id,
-                value=value,
+                className=f"radio{' radio--inline' if inline else ''}",
                 label=label,
-                size="sm",
+                value=value,
+                children=dmc.Group(
+                    [
+                        dmc.Radio(option["label"], value=option["value"], color=THEME_COLOR)
+                        for option in options
+                    ]
+                ),
             ),
         ],
     )
 
 
-def generate_options(options: list | EnumMeta, str_val: bool = False) -> list[dict]:
+def generate_options(options: list | EnumMeta) -> list[dict]:
     """Generates options for dropdowns, checklists, radios, etc."""
     if isinstance(options, EnumMeta):
         return [
-            {"label": option.label, "value": f"{option.value}" if str_val else option.value}
-            for option in options
+            {"label": option.label, "value": f"{option.value}"} for option in options
         ]
 
-    return [
-        {"label": option, "value": f"{option}" if str_val else i}
-        for i, option in enumerate(options)
-    ]
+    return [{"label": option, "value": f"{option}"} for option in options]
 
 
 def generate_settings_form() -> html.Div:
@@ -154,7 +127,7 @@ def generate_settings_form() -> html.Div:
     Returns:
         html.Div: A Div containing the settings for selecting the scenario.
     """
-    priority_options = generate_options(PriorityType, str_val=True)
+    priority_options = generate_options(PriorityType)
 
     return html.Div(
         className="settings",
@@ -173,7 +146,7 @@ def generate_settings_form() -> html.Div:
                 "Balance Priority",
                 "priority",
                 sorted(priority_options, key=lambda op: op["value"]),
-                "0",
+                f"{PriorityType.MEMORY.value}",
             ),
             html.Label("Solver Time Limit (seconds)", htmlFor="solver-time-limit"),
             dmc.NumberInput(

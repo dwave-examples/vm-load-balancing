@@ -73,12 +73,31 @@ limitations under the License.
     box-shadow: 0 0 0 2px var(--teal);
 }
 
-.mantine-InputWrapper-label.mantine-RadioGroup-label {
+.mantine-InputWrapper-label.mantine-RadioGroup-label,
+.mantine-InputWrapper-label.mantine-CheckboxGroup-label {
     font-family: var(--font);
     color: var(--blue-darkest);
     font-size: 1.125rem;
     line-height: 1.5rem;
     margin: 1rem 0 0.5rem;
     font-weight: 600;
+    display: block;
+}
+
+.radio label,
+.checklist label {
+    margin-top: 0.125rem;
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1rem;
+}
+
+.radio--inline label:first-child,
+.checklist--inline label:first-child {
+    margin-right: 0.75rem;
+}
+
+.radio:not(.radio--inline) .mantine-Group-root,
+.checklist:not(.checklist--inline) .mantine-Group-root {
     display: block;
 }

@@ -197,18 +197,6 @@ input[type="radio"] {
     flex: 1;
 }
 
-.radio label,
-.checklist label {
-    margin-top: 0.125rem;
-    font-weight: 400;
-    font-size: 1rem;
-}
-
-.radio--inline label:first-child,
-.checklist--inline label:first-child {
-    margin-right: 0.75rem;
-}
-
 /* The following rules are overwriting Dash styling */
 .VirtualizedSelectFocusedOption {
     background-color: var(--grey-lighter);
