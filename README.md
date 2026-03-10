@@ -5,7 +5,7 @@ in a way that evenly balances CPU and memory requirements across a set of hosts,
 preventing overload or under-utilization of host machines. It is a real-world
 problem for many organizations, including D-Wave.
 
-![Demo Example](static/demo.png)
+![Demo Example](static/demo.png "Image of demo interface")
 
 ## Installation
 
