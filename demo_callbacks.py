@@ -28,13 +28,14 @@ from src.demo_enums import PriorityType
 
 @dash.callback(
     Output({"type": "to-collapse-class", "index": MATCH}, "className"),
+    Output({"type": "collapse-trigger", "index": MATCH}, "aria-expanded"),
     inputs=[
         Input({"type": "collapse-trigger", "index": MATCH}, "n_clicks"),
         State({"type": "to-collapse-class", "index": MATCH}, "className"),
     ],
     prevent_initial_call=True,
 )
-def toggle_left_column(collapse_trigger: int, to_collapse_class: str) -> str:
+def toggle_left_column(collapse_trigger: int, to_collapse_class: str) -> tuple[str, str]:
     """Toggles a 'collapsed' class that hides and shows some aspect of the UI.
 
     Args:
@@ -44,28 +45,30 @@ def toggle_left_column(collapse_trigger: int, to_collapse_class: str) -> str:
 
     Returns:
         str: The new class name of the thing to collapse.
+        str: The aria-expanded value.
     """
 
     classes = to_collapse_class.split(" ") if to_collapse_class else []
     if "collapsed" in classes:
         classes.remove("collapsed")
-        return " ".join(classes)
-    return to_collapse_class + " collapsed" if to_collapse_class else "collapsed"
+        return " ".join(classes), "true"
+    return to_collapse_class + " collapsed" if to_collapse_class else "collapsed", "false"
 
 
 @dash.callback(
-    Output({"type": "graph", "index": ALL}, "className"),
+    Output({"type": "graph-wrapper", "index": ALL}, "className"),
     Output({"type": "magnifying", "index": ALL}, "className"),
+    Output({"type": "magnifying", "index": ALL}, "aria-expanded"),
     inputs=[
         Input({"type": "magnifying", "index": ALL}, "n_clicks"),
-        State({"type": "graph", "index": ALL}, "className"),
+        State({"type": "graph-wrapper", "index": ALL}, "className"),
     ],
     prevent_initial_call=True,
 )
 def magnify_graph(
     magnifying: int,
     graph_classes: list[str],
-) -> tuple[list[str], list[str]]:
+) -> tuple[list[str], list[str], list[str]]:
     """Zooms in or out of a graph when the graph's magnifying button is clicked.
 
     Args:
@@ -75,34 +78,39 @@ def magnify_graph(
     Returns:
         list[str]: A list of the new graph class names.
         list[str]: A list of the new magnifying button class names.
+        list[str]: A list of the new aria-expanded values for the magnifying buttons.
     """
     triggered_index = ctx.triggered_id["index"]
     one_page_count = int(len(graph_classes) / 2)
 
     no_update_page = [dash.no_update] * one_page_count
     display_none_page = ["display-none"] * one_page_count
-    reset_graph_page = ["graph-element"] * one_page_count
+    reset_graph_page = ["graph-wrapper"] * one_page_count
     reset_mag_page = ["magnifying"] * one_page_count
-    is_expanded = "graph-element-expanded" in graph_classes[triggered_index]
+    reset_aria_page = ["false"] * one_page_count
+    is_expanded = "graph-wrapper-expanded" in graph_classes[triggered_index]
     on_first_page = triggered_index < one_page_count
 
     if on_first_page:  # On first page
         if is_expanded:
-            return reset_graph_page + no_update_page, reset_mag_page + no_update_page
+            return reset_graph_page + no_update_page, reset_mag_page + no_update_page, reset_aria_page + no_update_page
 
         graph_class_names = display_none_page + no_update_page
         mag_class_names = display_none_page + no_update_page
+        aria_class_names = reset_aria_page + no_update_page
     else:  # On second page
         if is_expanded:
-            return no_update_page + reset_graph_page, no_update_page + reset_mag_page
+            return no_update_page + reset_graph_page, no_update_page + reset_mag_page, no_update_page + reset_aria_page
 
         graph_class_names = no_update_page + display_none_page
         mag_class_names = no_update_page + display_none_page
+        aria_class_names = no_update_page + reset_aria_page
 
-    graph_class_names[triggered_index] = "graph-element-expanded"
+    graph_class_names[triggered_index] = "graph-wrapper-expanded"
     mag_class_names[triggered_index] = "magnifying minus"
+    aria_class_names[triggered_index] = "true"
 
-    return graph_class_names, mag_class_names
+    return graph_class_names, mag_class_names, aria_class_names
 
 
 class RenderInitialStateReturn(NamedTuple):
@@ -126,16 +134,14 @@ class RenderInitialStateReturn(NamedTuple):
     inputs=[
         Input("vms", "value"),
         Input("hosts", "value"),
-        State("priority", "value"),
     ],
 )
-def render_initial_state(num_vms: int, num_hosts: int, priority: int) -> RenderInitialStateReturn:
+def render_initial_state(num_vms: int, num_hosts: int) -> RenderInitialStateReturn:
     """Runs on load and any time the value of Virtual Machines or Hosts is updated.
 
     Args:
         num_vms (int): The value of the virtual machine slider.
         num_hosts (int): The value of the host slider.
-        priority (int): The value of the priority selector.
 
     Returns:
         fig_mem_percent: The figure for the memory percent graph.
@@ -195,10 +201,10 @@ class RunOptimizationReturn(NamedTuple):
         State("hosts-store", "data"),
     ],
     running=[
-        (Output("cancel-button", "className"), "", "display-none"),  # Show/hide cancel button.
-        (Output("run-button", "className"), "display-none", ""),  # Hides run button while running.
+        (Output("cancel-button", "style"), {}, {"display": "none"}),  # Show/hide cancel button.
+        (Output("run-button", "style"), {"display": "none"}, {}),  # Hides run button while running.
         (Output("results-tab", "disabled"), True, True),  # Disables results tab while running.
-        (Output("results-tab", "label"), "Loading...", "Updated State"),
+        (Output("results-tab", "children"), "Loading...", "Updated State"),
         (Output("tabs", "value"), "input-tab", "input-tab"),  # Switch to input tab while running.
     ],
     cancel=[Input("cancel-button", "n_clicks")],
@@ -207,7 +213,7 @@ class RunOptimizationReturn(NamedTuple):
 def run_optimization(
     run_click: int,
     time_limit: float,
-    priority: int,
+    priority: str,
     vms: dict[dict],
     hosts: dict[dict],
 ) -> RunOptimizationReturn:
@@ -235,7 +241,7 @@ def run_optimization(
             fig_cpu_result: The figure for the CPU virtual machine graph.
             results_tab_disabled: Whether the results tab should be disabled.
     """
-    priority = PriorityType(priority)
+    priority = PriorityType(int(priority))
     cqm = cqm_balancer.build_cqm(vms, hosts, priority)
     plan = cqm_balancer.get_solution(cqm, time_limit)
 

@@ -92,12 +92,12 @@ def generate_percent_chart(df: pd.DataFrame, title: str = "") -> go.Figure:
     fig.add_vline(
         x=mean,
         line_width=2,
-        line_color="red",
+        line_color="#aa3a3c",
         annotation_text=f"mean: {mean:.0f}% (standard deviation: {sd:.1f})",
         line_dash="dash",
-        annotation_font_size=13,
+        annotation_font_size=15,
         annotation_position="top",
-        annotation_font_color="red",
+        annotation_font_color="#aa3a3c",
     )
 
     fig.layout.xaxis.type = "linear"
@@ -107,7 +107,8 @@ def generate_percent_chart(df: pd.DataFrame, title: str = "") -> go.Figure:
         xaxis_title="Percent",
         yaxis_title=None,
         showlegend=False,
-        font=dict(size=11),
+        font=dict(size=13, weight=600, family="proxima-nova, sans-serif"),
+        title=dict(font=dict(size=20)),
     )
 
     return fig
@@ -147,7 +148,8 @@ def generate_vm_bar_chart(
         xaxis_title=f"Usage ({units})",
         yaxis_title=None,
         showlegend=False,
-        font=dict(size=11),
+        font=dict(size=13, weight=600, family="proxima-nova, sans-serif"),
+        title=dict(font=dict(size=20)),
     )
 
     return fig

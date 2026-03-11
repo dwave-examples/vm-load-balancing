@@ -19,40 +19,26 @@ This file contains all custom CSS for this demo.
 The following style rules can be altered or removed and any additional
 custom CSS can be added below.
 *******************************************************************/
-.columns-main {
-    height: calc(100vh - var(--banner-height));
-}
-
-.solution-stats-table td:nth-child(2n) {
-    text-align: right;
-}
-
-.solution-stats-table td:nth-child(2n+1) {
-    border-right: none;
-}
 
 .input, .results {
     display: flex;
-    height: auto !important;
-    margin-top: 0.6rem;
 }
 
-.tab-content {
-    padding: 1rem 3rem;
-    overflow-x: auto;
+.tab-content-wrapper {
+    padding-top: 1rem;
 }
 
-.graph-element {
-    width: calc(45vw - var(--left-col-width)/2);
-    height: calc((45vw - var(--left-col-width)/2)*0.6);
+.graph-wrapper {
+    width: calc(50vw - var(--left-col-width)/2);
+    height: calc((50vw - var(--left-col-width)/2)*0.6);
 }
 
-.graph-element-expanded {
-    width: calc(90vw - var(--left-col-width));
-    height: calc((90vw - var(--left-col-width))*0.6);
+.graph-wrapper-expanded {
+    width: calc(100vw - var(--left-col-width));
+    height: calc((100vw - var(--left-col-width))*0.6);
 }
 
-.graph-wrapper > div {
+.graph-container > div {
     position: relative;
 }
 
@@ -62,6 +48,8 @@ custom CSS can be added below.
     right: 1.4rem;
     z-index: 1;
     cursor: pointer;
+    padding: 0;
+    background: none;
 }
 
 .magnifying span:last-child {
@@ -77,8 +65,7 @@ custom CSS can be added below.
 }
 
 .magnifying-lens {
-    border: 2px solid var(--grey);
-    color: var(--grey);
+    border: 2px solid var(--grey-medium);
     border-radius: 50%;
     height: 1.5rem;
     width: 1.5rem;
@@ -88,12 +75,22 @@ custom CSS can be added below.
     transition: color 0.2s ease-in-out, border 0.2s ease-in-out;
 }
 
-.magnifying-handle {
-    background-color: var(--grey);
+.magnifying-lens span {
+    color: var(--grey-medium);
+    font-size: 1.25rem;
+}
+
+.magnifying:after {
+    content: "";
+    display: block;
+    position: absolute;
+    bottom: -9px;
+    right: -2px;
+    background-color: var(--grey-medium);
     width: 3px;
     height: 1rem;
     border-radius: 2px;
-    transform: rotate(-45deg) translate(15px, 10px);
+    transform: rotate(-45deg);
     transition: background-color 0.2s ease-in-out;
 }
 
@@ -102,6 +99,6 @@ custom CSS can be added below.
     color: var(--grey-dark);
 }
 
-.magnifying:hover .magnifying-handle {
+.magnifying:hover:after {
     background-color: var(--grey-dark);
 }

@@ -14,20 +14,14 @@
 
 """This file stores input parameters for the app."""
 
-# THEME_COLOR is used for the button, text, and banner and should be dark
-# and pass accessibility checks with white: https://webaim.org/resources/contrastchecker/
-# THEME_COLOR_SECONDARY can be light or dark and is used for sliders, loading icon, and tabs
-THEME_COLOR = "#074C91"  # D-Wave dark blue default #074C91
-THEME_COLOR_SECONDARY = "#2A7DE1"  # D-Wave blue default #2A7DE1
-
 THUMBNAIL = "static/dwave_logo.svg"
 
-APP_TITLE = "VM Load Balancing"
-MAIN_HEADER = "VM Load Balancing"
+APP_TITLE = "Load Balancing"
+MAIN_HEADER = "Load Balancing"
 DESCRIPTION = """\
-Virtual machine load balancing is the problem of distributing virtual machines in a way that
+Distributing virtual machines in a way that
 evenly balances CPU and memory requirements across a set of hosts, preventing overload
-or under-utilization of host machines. 
+or under-utilization.
 """
 
 RANDOM_SEED = None
